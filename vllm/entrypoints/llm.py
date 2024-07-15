@@ -295,6 +295,7 @@ class LLM:
             # Use default sampling params.
             sampling_params = SamplingParams()
 
+        # Get input's tokenized vector and append it to scheduler's waiting list
         self._validate_and_add_requests(
             inputs=inputs,
             params=sampling_params,
@@ -514,7 +515,7 @@ class LLM:
             raise ValueError("The lengths of prompts and lora_request "
                              "must be the same.")
 
-        # Add requests to the engine.
+        # Add requests to the engine one by one.
         for i, request_inputs in enumerate(inputs):
             self._add_request(
                 request_inputs,
@@ -553,6 +554,8 @@ class LLM:
         total_in_toks = 0
         total_out_toks = 0
         while self.llm_engine.has_unfinished_requests():
+            # print("=========================================")
+            # print("Step: ")
             step_outputs = self.llm_engine.step()
             for output in step_outputs:
                 if output.finished:

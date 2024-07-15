@@ -21,7 +21,7 @@ assert Version(ray.__version__) >= Version(
 sampling_params = SamplingParams(temperature=0.8, top_p=0.95)
 
 # Set tensor parallelism per instance.
-tensor_parallel_size = 1
+tensor_parallel_size = 2
 
 # Set number of instances. Each instance will use tensor_parallel_size GPUs.
 num_instances = 1
@@ -32,7 +32,7 @@ class LLMPredictor:
 
     def __init__(self):
         # Create an LLM.
-        self.llm = LLM(model="meta-llama/Llama-2-7b-chat-hf",
+        self.llm = LLM(model="root/models/facebook/opt-125m",
                        tensor_parallel_size=tensor_parallel_size)
 
     def __call__(self, batch: Dict[str, np.ndarray]) -> Dict[str, list]:

@@ -71,6 +71,12 @@ class CacheEngine:
             num_blocks, self.block_size, self.num_kv_heads, self.head_size)
         pin_memory = is_pin_memory_available() if device == "cpu" else False
         kv_cache: List[torch.Tensor] = []
+        # print(f"kv cache shape = {kv_cache_shape}, type = {self.dtype}, " \
+        #       f"nb layers = {self.num_layers}")
+
+        # Cache shape will be 
+        # [nb_layers, 2, nb_blocks, block_size, nb_heads, head_size]
+        # block_size refers to nb of tokens in a single cache block
         for _ in range(self.num_layers):
             # null block in CpuGpuBlockAllocator requires at least that
             # block to be zeroed-out.
@@ -113,4 +119,5 @@ class CacheEngine:
         else:
             dtype = STR_DTYPE_TO_TORCH_DTYPE[cache_config.cache_dtype]
         dtype_size = get_dtype_size(dtype)
+        # print(cache_config.block_size, num_heads, head_size, dtype_size, num_layers)
         return dtype_size * total

@@ -177,11 +177,17 @@ class Worker(WorkerBase):
         # NOTE(woosuk): Here we assume that the other processes using the same
         # GPU did not change their memory usage during the profiling.
         peak_memory = self.init_gpu_memory - free_gpu_memory
+
+        # gb = 1024*1024*1024
+        # print(f"init mem = {self.init_gpu_memory/gb:.2f}, peak mem = {peak_memory/gb:.2f}, " \
+        #       f"free mem = {free_gpu_memory/gb:.2f}, total mem = {total_gpu_memory/gb:.2f}")
+
         assert peak_memory > 0, (
             "Error in memory profiling. This happens when the GPU memory was "
             "not properly cleaned up before initializing the vLLM instance.")
 
         cache_block_size = self.get_cache_block_size_bytes()
+        # print(f'cache block size = {cache_block_size}')
         num_gpu_blocks = int(
             (total_gpu_memory * self.cache_config.gpu_memory_utilization -
              peak_memory) // cache_block_size)
@@ -217,6 +223,18 @@ class Worker(WorkerBase):
                                         self.parallel_config,
                                         self.device_config)
         self.gpu_cache = self.cache_engine.gpu_cache
+        # if len(self.gpu_cache) != 0:
+        #     print("-------------------------------------")
+        #     print(len(self.gpu_cache))
+        #     for i, tensor in enumerate(self.gpu_cache):
+        #         print(f"Tensor {i}:")
+        #         print(f"  Device: {tensor.device}")
+        #         print(f"  Shape: {tensor.shape}")
+        #         print(f"  Dtype: {tensor.dtype}")
+        #         # print(tensor.cpu())
+        # else:
+        #     print("Don't have kv cache!!!!!")
+        # print("-------------------------------------")
 
     def _warm_up_model(self) -> None:
         if not self.model_config.enforce_eager:
@@ -287,6 +305,24 @@ class Worker(WorkerBase):
         if num_seq_groups == 0:
             return []
 
+        # if len(self.gpu_cache) != 0:
+        #     print("-------------------------------------")
+        #     print(len(self.gpu_cache))
+        #     for i, tensor in enumerate(self.gpu_cache):
+        #         if torch.all(tensor == 0):
+        #             print("kv cache tensor is all 0")
+        #         else:
+        #             print(f"Tensor {i}:")
+        #             print(f"  Device: {tensor.device}")
+        #             print(f"  Shape: {tensor.shape}")
+        #             print(f"  Dtype: {tensor.dtype}")
+        #             # print(tensor.cpu())
+        # else:
+        #     print("Don't have kv cache!!!!!")
+        # print("-------------------------------------")
+
+        # Execute model and save kv cache in gpu_cache
+        # NOTE: self.gpu_cache is a list, so passing it actually is passing reference
         output = self.model_runner.execute_model(seq_group_metadata_list,
                                                  self.gpu_cache)
 

@@ -252,7 +252,17 @@ class OPTDecoder(nn.Module):
 
         for i in range(len(self.layers)):
             layer = self.layers[i]
+
+            # if isinstance(kv_caches[i], torch.Tensor):
+            #     org_kv = kv_caches[i].clone()
+
             hidden_states = layer(hidden_states, kv_caches[i], attn_metadata)
+
+            # if isinstance(kv_caches[i], torch.Tensor):
+            #     if torch.equal(org_kv, kv_caches[i]):
+            #         print("equal")
+            #     else:
+            #         print("not equal")
 
         if self.final_layer_norm is not None:
             hidden_states = self.final_layer_norm(hidden_states)
@@ -311,6 +321,7 @@ class OPTForCausalLM(nn.Module):
 
     def compute_logits(self, hidden_states: torch.Tensor,
                        sampling_metadata: SamplingMetadata) -> torch.Tensor:
+        # print("OPTModel compute logits")
         logits = self.logits_processor(self.lm_head_weight, hidden_states,
                                        sampling_metadata)
         return logits
