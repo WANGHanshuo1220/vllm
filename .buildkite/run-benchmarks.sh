@@ -15,10 +15,13 @@ cd "$(dirname "${BASH_SOURCE[0]}")/.."
 # python3 benchmarks/benchmark_throughput.py --input-len 256 --output-len 256 --output-json throughput_results.json 2>&1 | tee benchmark_throughput.txt
 # bench_throughput_exit_code=$?
 
-model="/root/models/meta-llama/llama-2-7b-hf"
+model="/root/models/facebook/opt-6.7b"
+draft="/root/models/facebook/opt-125m"
 
 # run server-based benchmarks and upload the result to buildkite
-python3 -m vllm.entrypoints.openai.api_server --model ${model} &
+python3 -m vllm.entrypoints.openai.api_server --model ${model} \
+    --speculative-model ${draft} \
+    --use-v2-block-manager --num_speculative_tokens 5 &
 server_pid=$!
 
 FILE="ShareGPT_V3_unfiltered_cleaned_split.json"
@@ -37,7 +40,7 @@ python3 benchmarks/benchmark_serving.py \
     --dataset-name sharegpt \
     --dataset-path ./ShareGPT_V3_unfiltered_cleaned_split.json \
     --model ${model} \
-    --num-prompts 20 \
+    --num-prompts 2 \
     --endpoint /v1/completions \
     --tokenizer ${model} \
     --save-result \

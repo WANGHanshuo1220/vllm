@@ -1,0 +1,26 @@
+Namespace(backend='vllm', base_url=None, host='localhost', port=8000, endpoint='/v1/completions', dataset=None, dataset_name='sharegpt', dataset_path='./ShareGPT_V3_unfiltered_cleaned_split.json', model='/root/models/facebook/opt-6.7b', tokenizer='/root/models/facebook/opt-6.7b', best_of=1, use_beam_search=False, num_prompts=2, sharegpt_output_len=None, sonnet_input_len=550, sonnet_output_len=150, sonnet_prefix_len=200, request_rate=inf, seed=0, trust_remote_code=False, disable_tqdm=False, save_result=True, metadata=None, result_dir=None, result_filename=None)
+Starting initial single prompt test run...
+Initial test run completed. Starting main benchmark run...
+Traffic request rate: inf
+  0%|          | 0/2 [00:00<?, ?it/s] 50%|█████     | 1/2 [00:00<00:00,  4.03it/s]100%|██████████| 2/2 [00:05<00:00,  2.98s/it]100%|██████████| 2/2 [00:05<00:00,  2.57s/it]
+============ Serving Benchmark Result ============
+Successful requests:                     2         
+Benchmark duration (s):                  5.14      
+Total input tokens:                      41        
+Total generated tokens:                  977       
+Request throughput (req/s):              0.39      
+Input token throughput (tok/s):          7.98      
+Output token throughput (tok/s):         190.19    
+---------------Time to First Token----------------
+Mean TTFT (ms):                          42.92     
+Median TTFT (ms):                        42.92     
+P99 TTFT (ms):                           52.88     
+-----Time per Output Token (excl. 1st token)------
+Mean TPOT (ms):                          9.36      
+Median TPOT (ms):                        9.36      
+P99 TPOT (ms):                           13.35     
+---------------Inter-token Latency----------------
+Mean ITL (ms):                           25.84     
+Median ITL (ms):                         25.39     
+P99 ITL (ms):                            28.82     
+==================================================
